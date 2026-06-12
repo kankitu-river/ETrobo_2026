@@ -32,18 +32,18 @@ extern "C" {
  *  まず Kp だけで走らせ → Kd で振動を抑え → 必要なら Ki でオフセット除去、
  *  の順で調整するとよい。
  */
-#define KP                  (0.3F)   /* 比例ゲイン (P部) */
+#define KP                  (0.4F)   /* 比例ゲイン (P部) */
 #define KI                  (0.0F)   /* 積分ゲイン (I部) */
-#define KD                  (0.4F)   /* 微分ゲイン (D部) */
+#define KD                  (0.5F)   /* 微分ゲイン (D部) */
 
 /* --- 積分の暴走防止（アンチワインドアップ） --- */
 #define INTEGRAL_MAX        (1000.0F)/* 積分値の絶対値上限 */
 
 /* --- 走行スピード --- */
-#define BASE_SPEED          (50)     /* 直線時の基準スピード */
-#define CURVE_SPEED         (25)     /* カーブ時のスピード（減速） */
-#define CURVE_THRESHOLD     (10)     /* |操舵量|がこれを超えたらカーブと判定 */
-#define MAX_STEERING        (30)     /* 操舵量の上限（交差点等の急変を抑制） */
+#define BASE_SPEED          (45)     /* 直線時の基準スピード */
+#define CURVE_SPEED         (20)     /* カーブ時のスピード（減速） */
+#define CURVE_THRESHOLD     (7)      /* |操舵量|がこれを超えたらカーブと判定 */
+#define MAX_STEERING        (40)     /* 操舵量の上限（交差点等の急変を抑制） */
 
 /* --- 色付き物体の検出（彩度が高い区間はPID更新をスキップ） --- */
 #define COLOR_SAT_THRESHOLD (30)     /* 彩度がこれ以上なら色付きと判定 */

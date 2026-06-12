@@ -1,7 +1,7 @@
 #include "kernel_cfg.h"
 #include "app.h"
 #include <stdio.h>
-#include "LineTracer.h"
+#include "LineTracerPID.h"
 
 #include <spike/pup/forcesensor.h>
 
@@ -24,7 +24,7 @@ void main_task(intptr_t unused) {
   }
 
   /* LineTracerに構成を渡す */
-  LineTracer_Configure(left_motor_port,right_motor_port,color_sensor_port);
+  LineTracerPID_Configure(left_motor_port,right_motor_port,color_sensor_port);
   printf("Start Line Trace!!\n");
     
   /* ライントレースタスクの起動 */
