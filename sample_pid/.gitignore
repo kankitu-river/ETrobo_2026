@@ -1,0 +1,8 @@
+# ビルド成果物
+build/
+
+# Windows Zone.Identifier
+*:Zone.Identifier
+
+# ZIPファイル（必要なら削除）
+*.zip
