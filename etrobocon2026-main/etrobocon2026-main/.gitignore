@@ -1,0 +1,10 @@
+# ディレクトリ
+bin
+obj
+/test_build/
+tests/datafiles/
+datafiles/logfiles/
+
+# 実行ファイル
+camera_app
+scripts/CommandMerger
