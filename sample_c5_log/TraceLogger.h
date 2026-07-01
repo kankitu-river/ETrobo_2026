@@ -7,10 +7,11 @@ extern "C" {
 
 #include <stdint.h>
 
-void TraceLogger_Start(void);//ƒƒO‹L˜^‚ÌŠJn
-void TraceLogger_Record(int32_t reflection, int16_t steering,//ƒƒO‹L˜^ŠÖ”
-                        int16_t left_power, int16_t right_power);
-void TraceLogger_Dump(void);//ƒƒO‚Ìƒ_ƒ“ƒvŠÖ”
+void TraceLogger_Start(void);//ï¿½ï¿½ï¿½Oï¿½Lï¿½^ï¿½ÌŠJï¿½n
+void TraceLogger_Record(int32_t reflection, int16_t steering,
+                        int16_t left_power, int16_t right_power,
+                        int32_t left_count, int32_t right_count);
+void TraceLogger_Dump(void);//ï¿½ï¿½ï¿½Oï¿½Ìƒ_ï¿½ï¿½ï¿½vï¿½Öï¿½
 
 #ifdef __cplusplus
 }

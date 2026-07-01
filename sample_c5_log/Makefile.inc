@@ -3,6 +3,8 @@ mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 APPL_COBJS +=\
 LineTracer.o\
 TraceLogger.o\
+Odometry.o\
+LogReplay.o\
 
 APPL_LIBS += -lm
 

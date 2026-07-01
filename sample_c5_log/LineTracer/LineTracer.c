@@ -1,6 +1,8 @@
 #include "app.h"
 #include "LineTracer.h"
 #include "TraceLogger.h"
+#include "Odometry.h"
+#include "LogReplay.h"
 
 #include <spike/pup/motor.h>
 #include <spike/pup/colorsensor.h>
@@ -15,6 +17,8 @@ static pup_device_t *fg_color_sensor;
 static int32_t fg_reflection;
 static int fg_left_motor_power;
 static int fg_right_motor_power;
+static int fg_base_speed;
+static int fg_straight_mode;
 
 void LineTracer_Configure(pbio_port_id_t left_motor_port, pbio_port_id_t right_motor_port, pbio_port_id_t color_sensor_port)
 {
@@ -25,8 +29,10 @@ void LineTracer_Configure(pbio_port_id_t left_motor_port, pbio_port_id_t right_m
   fg_right_motor   = pup_motor_get_device(right_motor_port);  
 
   pup_motor_setup(fg_left_motor,PUP_DIRECTION_COUNTERCLOCKWISE,true);
-  pup_motor_setup(fg_right_motor,PUP_DIRECTION_CLOCKWISE,true);  
+  pup_motor_setup(fg_right_motor,PUP_DIRECTION_CLOCKWISE,true);
 
+  fg_base_speed    = BASE_SPEED;
+  fg_straight_mode = 0;
 }
 
 void LineTracer_Stop(void)//走行停止関数
@@ -38,7 +44,8 @@ void LineTracer_Stop(void)//走行停止関数
 /* ライントレースタスク(100msec周期で関数コールされる) */
 void tracer_task(intptr_t unused) {
 
-    int16_t steering_amount; /* ステアリング操舵量の計算 */
+    int16_t steering_amount;
+    int32_t left_count, right_count;
 
     /* ステアリング操舵量の計算 */
     steering_amount = steering_amount_calculation();
@@ -46,14 +53,24 @@ void tracer_task(intptr_t unused) {
     /* 走行モータ制御 */
     motor_drive_control(steering_amount);
 
+    /* エンコーダ取得・オドメトリ更新 (100msec毎) */
+    left_count  = pup_motor_get_count(fg_left_motor);
+    right_count = pup_motor_get_count(fg_right_motor);
+    Odometry_Update(left_count, right_count);
+
     /* 500msecごとに走行ログをRAMへ保存 */
     TraceLogger_Record(fg_reflection, steering_amount,
                        (int16_t)fg_left_motor_power,
-                       (int16_t)fg_right_motor_power);
+                       (int16_t)fg_right_motor_power,
+                       left_count, right_count);
 
     /* タスク終了 */
     ext_tsk();
 }
+
+void LineTracer_SetSpeed(int speed)    { fg_base_speed    = speed; }
+void LineTracer_SetStraight(void)      { fg_straight_mode = 1; }
+void LineTracer_SetLineTrace(void)     { fg_straight_mode = 0; }
 
 /* ステアリング操舵量の計算 */
 static int16_t steering_amount_calculation(void){
@@ -79,9 +96,11 @@ static int16_t steering_amount_calculation(void){
 /* 走行モータ制御 */
 static void motor_drive_control(int16_t steering_amount){
 
-    /* 左右モータ駆動パワーの計算(走行エッジを右にする場合はRIGHT_EDGEに書き換えること) */
-    fg_left_motor_power  = (int)(BASE_SPEED + (steering_amount * LEFT_EDGE));
-    fg_right_motor_power = (int)(BASE_SPEED - (steering_amount * LEFT_EDGE));
+    /* 直進モード時はステアリング操舵量を0にする */
+    if (fg_straight_mode) { steering_amount = 0; }
+
+    fg_left_motor_power  = (int)(fg_base_speed + (steering_amount * LEFT_EDGE));
+    fg_right_motor_power = (int)(fg_base_speed - (steering_amount * LEFT_EDGE));
 
     /* 左右モータ駆動パワーの設定 */
     pup_motor_set_power(fg_left_motor, fg_left_motor_power);

@@ -22,6 +22,9 @@ extern "C" {
 
   extern void LineTracer_Configure(pbio_port_id_t left_motor_port, pbio_port_id_t right_motor_port, pbio_port_id_t color_sensor_port);
   extern void LineTracer_Stop(void);
+  extern void LineTracer_SetSpeed(int speed);     /* 走行速度を変更 */
+  extern void LineTracer_SetStraight(void);       /* 直進モードに切り替え */
+  extern void LineTracer_SetLineTrace(void);      /* ライントレースモードに戻す */
   
 #ifdef __cplusplus
 }
